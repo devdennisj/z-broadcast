@@ -1,22 +1,11 @@
 import { useState } from "react";
-import type { ZodError, ZodSchema } from "zod";
+import type { UseBroadcastOptions } from "./App";
+import type { BroadcastReturn, ParsedBroadcast } from "./types";
 
-export interface UseBroadcastOptions {
-    name: string;
-    schema: ZodSchema;
-}
-
-export interface ParsedBroadcast<T> {
-    success?: boolean;
-    data: T | undefined;
-    error?: ZodError<unknown>;
-}
-
-interface BroadcastReturn<T> extends ParsedBroadcast<T> {
-    postMessage: (message: unknown) => void;
-}
-
-export default function useChannel<T>({ name, schema }: UseBroadcastOptions): BroadcastReturn<T> {
+export default function useChannel<T>({
+    name,
+    schema,
+}: UseBroadcastOptions): BroadcastReturn<T> {
     const broadcastChannel = new BroadcastChannel(name);
 
     const [data, setData] = useState<ParsedBroadcast<T>>({
@@ -46,10 +35,6 @@ export default function useChannel<T>({ name, schema }: UseBroadcastOptions): Br
 
     return {
         ...data,
-        postMessage: (message: unknown) => {
-            parseData(message, () => {
-                broadcastChannel.postMessage(message);
-            });
-        },
+        postMessage: broadcastChannel.postMessage,
     };
 }
