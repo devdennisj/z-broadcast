@@ -1,40 +1,44 @@
 import { useState } from "react";
 import type { UseBroadcastOptions } from "./App";
-import type { BroadcastReturn, ParsedBroadcast } from "./types";
+import type {
+	BroadcastReturn,
+	ParseDataOptions,
+	ParsedBroadcast,
+} from "./types";
 
 export default function useChannel<T>({
-    name,
-    schema,
+	name,
+	schema,
 }: UseBroadcastOptions): BroadcastReturn<T> {
-    const broadcastChannel = new BroadcastChannel(name);
+	const broadcastChannel = new BroadcastChannel(name);
 
-    const [data, setData] = useState<ParsedBroadcast<T>>({
-        success: false,
-        data: undefined,
-        error: undefined,
-    });
+	const [data, setData] = useState<ParsedBroadcast<T>>({
+		success: false,
+		data: undefined,
+		error: undefined,
+	});
 
-    const parseData = (data: unknown, onSuccess?: () => void) => {
-        const parsed = schema.safeParse(data);
+	const parseData = ({ data, onSuccess }: ParseDataOptions) => {
+		const parsed = schema.safeParse(data);
 
-        if (onSuccess) {
-            onSuccess();
-        }
+		if (onSuccess) {
+			onSuccess();
+		}
 
-        if (parsed.success) {
-            setData(parsed);
-            return;
-        }
+		if (parsed.success) {
+			setData(parsed);
+			return;
+		}
 
-        setData({ error: parsed.error, success: false, data: undefined });
-    };
+		setData({ error: parsed.error, success: false, data: undefined });
+	};
 
-    broadcastChannel.onmessage = (event) => {
-        parseData(event.data);
-    };
+	broadcastChannel.onmessage = (event) => {
+		parseData({ data: event.data });
+	};
 
-    return {
-        ...data,
-        postMessage: broadcastChannel.postMessage,
-    };
+	return {
+		...data,
+		postMessage: broadcastChannel.postMessage,
+	};
 }

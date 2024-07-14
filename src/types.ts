@@ -14,3 +14,8 @@ export interface ParsedBroadcast<T> {
 export type BroadCastPostMessage = Pick<BroadcastChannel, "postMessage">;
 
 export interface BroadcastReturn<T> extends ParsedBroadcast<T>, BroadCastPostMessage { }
+
+export interface ParseDataOptions {
+    onSuccess?: () => void;
+    data: unknown;
+}
