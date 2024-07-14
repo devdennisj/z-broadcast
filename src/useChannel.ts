@@ -6,6 +6,16 @@ import type {
 	ParsedBroadcast,
 } from "./types";
 
+const parseData = ({ schema, data }: ParseDataOptions) => {
+	const parsed = schema.safeParse(data);
+
+	if (parsed.success) {
+		return parsed;
+	}
+
+	return { error: parsed.error, success: false, data: undefined };
+};
+
 export default function useChannel<T>({
 	name,
 	schema,
@@ -18,23 +28,10 @@ export default function useChannel<T>({
 		error: undefined,
 	});
 
-	const parseData = ({ data, onSuccess }: ParseDataOptions) => {
-		const parsed = schema.safeParse(data);
-
-		if (onSuccess) {
-			onSuccess();
-		}
-
-		if (parsed.success) {
-			setData(parsed);
-			return;
-		}
-
-		setData({ error: parsed.error, success: false, data: undefined });
-	};
-
 	broadcastChannel.onmessage = (event) => {
-		parseData({ data: event.data });
+		const result = parseData({ schema, data: event.data });
+
+		setData(result);
 	};
 
 	return {
