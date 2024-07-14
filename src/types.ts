@@ -1,23 +1,14 @@
-import type { ZodError, ZodSchema } from "zod";
+import type { SafeParseReturnType, ZodSchema } from "zod";
 
 export interface UseBroadcastOptions {
 	name: string;
 	schema: ZodSchema;
 }
 
-export interface ParsedBroadcast<T> {
-	success?: boolean;
-	data: T | undefined;
-	error?: ZodError<unknown>;
-}
-
 export type BroadCastPostMessage = Pick<BroadcastChannel, "postMessage">;
 
-export interface BroadcastReturn<T>
-	extends ParsedBroadcast<T>,
-		BroadCastPostMessage {}
+export type SafeParseData<T> = SafeParseReturnType<T, T>;
 
-export interface ParseDataOptions {
-	data: unknown;
-	schema: ZodSchema;
+export interface ChannelReturn<T> extends BroadCastPostMessage {
+	data: SafeParseReturnType<T, T> | undefined;
 }
