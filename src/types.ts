@@ -1,7 +1,7 @@
 import type { SafeParseReturnType, ZodSchema } from "zod";
 
 export interface UseBroadcastOptions<T> {
-	name: string;
+	id: string;
 	schema: ZodSchema<T>;
 }
 

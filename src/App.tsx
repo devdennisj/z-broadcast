@@ -16,13 +16,13 @@ type SecondMessage = z.infer<typeof secondSchema>;
 
 function App() {
   const { data, postMessage } = useChannel<Message>({
-    name: "new_test_channel",
+    id: "new_test_channel",
     schema,
   });
 
   const { data: secondData, postMessage: postSecondMessage } =
     useChannel<SecondMessage>({
-      name: "second_test_channel",
+      id: "second_test_channel",
       schema: secondSchema,
     });
 

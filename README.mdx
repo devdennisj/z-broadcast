@@ -1,0 +1,40 @@
+# z-broadcast(/ˈzi bɹɔdˌkæst/ )
+
+This hooks aims to be a thin wrapper around `BroadcastChannel` and provide type safety by using schema validation from zod.
+
+There is no package to install as a dependency. Just steal the code. No one likes extra dependencies and even fewer remember a coward. Steal it. It's right there if you look in `src/useChannel.ts`.
+The types are in `src/types.ts`.
+
+## Channels
+
+`const broadcastChannel = new BroadcastChannel(id);`
+
+For two tabs to communicate, you need to create a channel with the same id.
+
+It would be possible to mix up the data if it wasn't for the zod schema validation.
+Invalid data results in data being set to undefined and the error property being set to a `ZodError`.
+
+## postMessage
+
+This validates the data against the provided schema before it's sent and synced to the state to stay in sync.
+
+```js
+const postMessage = (message: z.infer<typeof schema>) => {
+  broadcastChannel.postMessage(message);
+  const result = schema.safeParse(message);
+
+  setData(result);
+};
+```
+
+## Receiving data
+
+The data is validated once more by the receiving tab
+
+```js
+broadcastChannel.onmessage = (event) => {
+  const result = schema.safeParse(event.data);
+
+  setData(result);
+};
+```
