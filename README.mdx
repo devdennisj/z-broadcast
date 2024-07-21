@@ -5,6 +5,35 @@ This hooks aims to be a thin wrapper around `BroadcastChannel` and provide type 
 There is no package to install as a dependency. Just steal the code. No one likes extra dependencies and even fewer remember a coward. Steal it. It's right there if you look in `src/useChannel.ts`.
 The types are in `src/types.ts`.
 
+## Full example
+
+Make a schema for the data you want to send and receive. Inferring the type from the schema is optional but recommended.
+
+```js
+const schema = z.object({
+  name: z.string(),
+});
+
+type Message = z.infer<typeof schema>;
+
+const secondSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+```
+
+and then use the hook like this
+
+```js
+const { data, postMessage } =
+  useChannel <
+  Message >
+  {
+    id: "new_test_channel",
+    schema,
+  };
+```
+
 ## Channels
 
 `const broadcastChannel = new BroadcastChannel(id);`

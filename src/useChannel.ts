@@ -7,7 +7,7 @@ import type { SafeParseData, UseBroadcastOptions } from "./types";
  * @property {string} id - Must match between the sender and receiver but unique across your application
  * @property {z.ZodType} schema - The Zod schema to validate data.
  */
-export default function useChannel<T>({ id, schema }: UseBroadcastOptions<T>) {
+export default function useChannel<T>({ id, schema }: Readonly<UseBroadcastOptions<T>>) {
 	const [data, setData] = useState<SafeParseData<T> | undefined>(undefined);
 
 	const broadcastChannel = new BroadcastChannel(id);
